@@ -72,12 +72,12 @@ export default function ProfileModal({ isOpen, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-bordercolor bg-surface/30">
           <h2 className="text-md font-bold font-plus-jakarta text-text-primary flex items-center gap-2">
-            <Sparkles className="w-4.5 h-4.5 text-brand-500" />
+            <Sparkles className="w-4.5 h-4.5 text-accent" />
             Edit Profile
           </h2>
           <button 
             onClick={onClose} 
-            className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors cursor-pointer flex items-center justify-center"
           >
             <X className="w-4.5 h-4.5" />
           </button>
@@ -96,18 +96,18 @@ export default function ProfileModal({ isOpen, onClose }) {
           <div className="flex flex-col items-center gap-2.5">
             <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
               {/* Avatar Image Circle */}
-              <div className="w-22 h-22 rounded-full overflow-hidden border-2 border-brand-500 bg-surface flex items-center justify-center shadow-premium-sm transition-transform group-hover:scale-102">
+              <div className="w-22 h-22 rounded-full overflow-hidden border-2 border-accent bg-surface flex items-center justify-center shadow-premium-sm transition-transform group-hover:scale-102">
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
                 ) : user?.avatar_url ? (
                   <img src={user.avatar_url} alt={user.display_name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-xl font-bold text-brand-500 font-plus-jakarta">{getInitials(user?.display_name || user?.username)}</span>
+                  <span className="text-xl font-bold text-accent font-plus-jakarta">{getInitials(user?.display_name || user?.username)}</span>
                 )}
               </div>
               
               {/* Camera Overlay */}
-              <div className="absolute inset-0 w-22 h-22 rounded-full bg-dark-950/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-2 border-brand-500">
+              <div className="absolute inset-0 w-22 h-22 rounded-full bg-dark-950/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-2 border-accent">
                 <Camera className="w-5 h-5 text-white" />
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function ProfileModal({ isOpen, onClose }) {
             <button 
               type="button" 
               onClick={() => fileInputRef.current?.click()}
-              className="text-xs text-brand-500 hover:underline font-semibold cursor-pointer"
+              className="text-xs text-accent hover:underline font-semibold cursor-pointer"
             >
               Change Profile Photo
             </button>
@@ -139,7 +139,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                 type="text" 
                 disabled 
                 value={user?.username || ''}
-                className="w-full premium-input px-3.5 py-2.5 rounded-xl text-text-muted text-xs cursor-not-allowed bg-surface/50 border-bordercolor"
+                className="w-full premium-input text-text-muted cursor-not-allowed bg-surface/50 border-bordercolor"
               />
               <span className="text-[10px] text-text-muted mt-1 block">Username cannot be changed.</span>
             </div>
@@ -154,7 +154,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                 placeholder="Enter your display name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full premium-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none"
+                className="w-full premium-input"
               />
             </div>
           </div>
@@ -164,20 +164,20 @@ export default function ProfileModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 rounded-xl border border-bordercolor text-text-secondary font-bold text-xs hover:bg-surface transition-colors cursor-pointer"
+              className="premium-btn premium-btn-secondary flex-1"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-xl transition-all duration-150 flex items-center justify-center gap-1.5 shadow-premium-sm disabled:opacity-50 cursor-pointer"
+              className="premium-btn premium-btn-primary flex-1"
             >
               {saving ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <Save className="w-3.5 h-3.5" />
+                  <Save className="w-4 h-4" />
                   Save Changes
                 </>
               )}

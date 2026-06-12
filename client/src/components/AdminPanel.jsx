@@ -47,7 +47,7 @@ export default function AdminPanel({ isOpen, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-bordercolor bg-surface/30">
           <div className="flex items-center gap-2.5">
-            <div className="p-1.5 bg-brand-500/10 rounded-lg border border-brand-500/20 text-brand-500">
+            <div className="p-1.5 bg-accent/10 rounded-lg border border-accent/20 text-accent">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -55,17 +55,17 @@ export default function AdminPanel({ isOpen, onClose }) {
               <p className="text-[10px] text-text-secondary mt-0.5">Real-time status overview of Blinkly.chat</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button 
               onClick={loadStats} 
               disabled={loading}
-              className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors disabled:opacity-50 cursor-pointer"
+              className="w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button 
               onClick={onClose} 
-              className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors cursor-pointer flex items-center justify-center"
             >
               <X className="w-4.5 h-4.5" />
             </button>
@@ -82,7 +82,7 @@ export default function AdminPanel({ isOpen, onClose }) {
 
           {loading && !stats ? (
             <div className="flex flex-col items-center justify-center py-12 gap-2.5">
-              <RefreshCw className="w-6 h-6 text-brand-500 animate-spin" />
+              <RefreshCw className="w-6 h-6 text-accent animate-spin" />
               <p className="text-xs text-text-secondary font-semibold animate-pulse">Loading live app statistics...</p>
             </div>
           ) : (
@@ -147,7 +147,7 @@ export default function AdminPanel({ isOpen, onClose }) {
           <div className="flex justify-end pt-1">
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-surface hover:bg-surface/50 text-text-primary font-bold text-xs border border-bordercolor shadow-premium-sm transition-colors cursor-pointer"
+              className="premium-btn premium-btn-secondary"
             >
               Close Panel
             </button>

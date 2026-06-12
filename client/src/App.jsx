@@ -9,10 +9,10 @@ function MainApp() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-950 flex flex-col justify-center items-center gap-4">
+      <div className="min-h-screen bg-surface flex flex-col justify-center items-center gap-4">
         {/* Premium spinner element */}
-        <div className="w-10 h-10 border-2 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
-        <p className="text-xs text-dark-400 font-semibold tracking-wider uppercase animate-pulse">Initializing Blinkly...</p>
+        <div className="w-10 h-10 border-2 border-accent/20 border-t-accent rounded-full animate-spin"></div>
+        <p className="text-xs text-text-secondary font-semibold tracking-wider uppercase animate-pulse">Initializing Blinkly...</p>
       </div>
     );
   }

@@ -441,7 +441,7 @@ export default function Dashboard() {
               <span className="text-xs font-bold text-text-primary truncate max-w-[130px] font-plus-jakarta leading-none">
                 {user?.display_name || user?.username}
               </span>
-              <span className="text-[9px] text-brand-500 font-bold tracking-wider flex items-center gap-0.5 mt-1">
+              <span className="text-[9px] text-accent font-bold tracking-wider flex items-center gap-0.5 mt-1">
                 {user?.is_admin && <Shield className="w-2.5 h-2.5" />}
                 {user?.is_admin ? 'ADMIN' : 'ONLINE'}
               </span>
@@ -449,25 +449,25 @@ export default function Dashboard() {
           </div>
 
           {/* Quick Actions Settings */}
-          <div className="flex items-center gap-0.5 relative" ref={dropdownRef}>
+          <div className="flex items-center gap-1 relative" ref={dropdownRef}>
             
             <button 
               onClick={() => {
                 setFriendsModalOpen(true);
                 setFriendsActiveTab('search');
               }}
-              className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors relative"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 cursor-pointer relative"
               title="Friends"
             >
               <Users className="w-4 h-4" />
               {pendingRequestsCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-brand-500 rounded-full"></span>
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full border border-sidebar animate-pulse"></span>
               )}
             </button>
 
             <button 
               onClick={() => toggleSound(!soundEnabled)}
-              className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 cursor-pointer"
               title={soundEnabled ? "Mute sounds" : "Unmute sounds"}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-text-muted" />}
@@ -475,7 +475,7 @@ export default function Dashboard() {
 
             <button 
               onClick={() => navigate('/settings')}
-              className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 cursor-pointer"
               title="Settings"
             >
               <Settings className="w-4 h-4" />
@@ -501,7 +501,7 @@ export default function Dashboard() {
                   className="w-full text-left px-3 py-2 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface rounded-lg transition-colors flex items-center justify-between"
                 >
                   <span>App Theme</span>
-                  <span className="text-[10px] text-brand-500 font-bold capitalize flex items-center gap-1">
+                  <span className="text-[10px] text-accent font-bold capitalize flex items-center gap-1">
                     {theme === 'dark' ? <Moon className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
                     {theme}
                   </span>
@@ -527,7 +527,7 @@ export default function Dashboard() {
                       setSettingsDropdownOpen(false);
                       setAdminOpen(true);
                     }}
-                    className="w-full text-left px-3 py-2 text-xs font-bold text-brand-500 hover:bg-brand-500/10 rounded-lg transition-colors flex items-center justify-between"
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-accent hover:bg-accent/10 rounded-lg transition-colors flex items-center justify-between"
                   >
                     <span>Admin Panel</span>
                     <Shield className="w-3 h-3" />
@@ -554,14 +554,16 @@ export default function Dashboard() {
 
         {/* Sidebar Search */}
         <div className="p-2.5">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-3.8 h-3.8 text-text-muted" />
+          <div className="premium-input-wrapper">
+            <div className="premium-input-icon left-3.5">
+              <Search className="w-4 h-4" />
+            </div>
             <input
               type="text"
               placeholder="Search conversations..."
               value={chatSearchQuery}
               onChange={(e) => setChatSearchQuery(e.target.value)}
-              className="w-full premium-input pl-9 pr-3 py-2 rounded-xl text-xs placeholder:text-text-muted focus:outline-none"
+              className="premium-input premium-input-with-icon-left"
             />
           </div>
         </div>
@@ -587,7 +589,7 @@ export default function Dashboard() {
                   setFriendsModalOpen(true);
                   setFriendsActiveTab('search');
                 }}
-                className="mt-3 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-[10.5px] rounded-lg transition-all"
+                className="premium-btn premium-btn-primary mt-3 h-8.5 px-4.5 text-[10.5px]"
               >
                 Find Friends
               </button>
@@ -607,13 +609,13 @@ export default function Dashboard() {
                     relative flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer select-none border transition-all duration-150
                     hover:bg-surface/50 active:scale-[0.99]
                     ${isSelected 
-                      ? 'bg-surface border-bordercolor shadow-premium-sm ring-1 ring-brand-500/10' 
+                      ? 'bg-surface border-bordercolor shadow-premium-sm ring-1 ring-accent/10' 
                       : 'border-transparent'}
                   `}
                 >
                   {/* Left rounded brand indicator for active selected card */}
                   {isSelected && (
-                    <div className="absolute left-0 top-2.5 bottom-2.5 w-1 bg-brand-500 rounded-r-full"></div>
+                    <div className="absolute left-0 top-2.5 bottom-2.5 w-1 bg-accent rounded-r-full"></div>
                   )}
 
                   {/* Avatar details */}
@@ -622,7 +624,7 @@ export default function Dashboard() {
                       url={conv.avatar_url} 
                       name={conv.display_name || conv.username} 
                       sizeClass="w-10 h-10 border border-bordercolor" 
-                      initialsClass="text-xs text-brand-500" 
+                      initialsClass="text-xs text-accent" 
                     />
                     {isOnline && (
                       <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-sidebar"></span>
@@ -635,7 +637,7 @@ export default function Dashboard() {
                       <h4 className={`text-xs truncate font-plus-jakarta ${isUnread ? 'font-bold text-text-primary' : 'font-medium text-text-primary'}`}>
                         {conv.display_name || conv.username}
                       </h4>
-                      <span className={`text-[9px] ${isUnread ? 'text-brand-500 font-bold' : 'text-text-muted'}`}>
+                      <span className={`text-[9px] ${isUnread ? 'text-accent font-bold' : 'text-text-muted'}`}>
                         {formatTime(conv.last_message_time || conv.updated_at)}
                       </span>
                     </div>
@@ -643,7 +645,7 @@ export default function Dashboard() {
                     <p className={`
                       text-[10.5px] truncate 
                       ${userTyping 
-                        ? 'text-brand-500 font-semibold' 
+                        ? 'text-accent font-semibold' 
                         : isUnread 
                           ? 'text-text-primary font-bold' 
                           : 'text-text-secondary'}
@@ -654,7 +656,7 @@ export default function Dashboard() {
 
                   {/* Unread badge dot */}
                   {isUnread && (
-                    <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0 shadow shadow-brand-500/20"></span>
+                    <span className="w-2 h-2 rounded-full bg-accent shrink-0 shadow shadow-accent/20"></span>
                   )}
 
                 </div>
@@ -689,7 +691,7 @@ export default function Dashboard() {
                     url={activeConversation.avatar_url} 
                     name={activeConversation.display_name || activeConversation.username} 
                     sizeClass="w-8.5 h-8.5 border border-bordercolor" 
-                    initialsClass="text-xs text-brand-500" 
+                    initialsClass="text-xs text-accent" 
                   />
                   {(onlineFriends.has(activeConversation.other_user_id) || activeConversation.is_online === 1) && (
                     <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-sidebar"></span>
@@ -702,7 +704,7 @@ export default function Dashboard() {
                   </span>
                   <span className="text-[9.5px] text-text-muted">
                     {isRecipientTyping ? (
-                      <span className="text-brand-500 font-bold animate-pulse">typing...</span>
+                      <span className="text-accent font-bold animate-pulse">typing...</span>
                     ) : (onlineFriends.has(activeConversation.other_user_id) || activeConversation.is_online === 1) ? (
                       <span className="text-green-500 font-medium">Online</span>
                     ) : (
@@ -713,22 +715,22 @@ export default function Dashboard() {
               </div>
 
               {/* Right-side action details */}
-              <div className="flex items-center gap-1.5 text-text-secondary">
+              <div className="flex items-center gap-1">
                 <button 
-                  className="p-1.5 rounded-lg hover:bg-surface hover:text-text-primary transition-colors cursor-pointer opacity-50 hover:opacity-100"
+                  className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
                   title="Voice Call (V2)"
                 >
                   <Phone className="w-4 h-4" />
                 </button>
                 <button 
-                  className="p-1.5 rounded-lg hover:bg-surface hover:text-text-primary transition-colors cursor-pointer opacity-50 hover:opacity-100"
+                  className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
                   title="Video Call (V2)"
                 >
                   <Video className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => removeFriend(activeConversation.other_user_id)}
-                  className="p-1.5 rounded-lg hover:bg-red-500/10 hover:text-red-500 transition-colors cursor-pointer"
+                  className="w-9 h-9 rounded-xl text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-95 flex items-center justify-center cursor-pointer"
                   title="Remove friend (unfriend)"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -747,7 +749,7 @@ export default function Dashboard() {
                   
                   {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 opacity-75 animate-fade-in">
-                      <div className="p-3 bg-sidebar border border-bordercolor text-brand-500 rounded-xl mb-3 shadow-premium-sm">
+                      <div className="p-3 bg-sidebar border border-bordercolor text-accent rounded-xl mb-3 shadow-premium-sm">
                         <Sparkles className="w-5 h-5" />
                       </div>
                       <h3 className="text-xs font-bold text-text-primary mb-0.5">Start the conversation</h3>
@@ -828,7 +830,7 @@ export default function Dashboard() {
                                 <button
                                   type="button"
                                   onClick={() => setActiveReactionMenuMessageId(activeReactionMenuMessageId === msg.id ? null : msg.id)}
-                                  className={`opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-surface text-text-secondary hover:text-text-primary cursor-pointer ${activeReactionMenuMessageId === msg.id ? 'opacity-100 text-brand-500 bg-surface' : ''}`}
+                                  className={`opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-surface text-text-secondary hover:text-text-primary cursor-pointer ${activeReactionMenuMessageId === msg.id ? 'opacity-100 text-accent bg-surface' : ''}`}
                                   title="React to message"
                                 >
                                   <Smile className="w-4 h-4" />
@@ -919,7 +921,7 @@ export default function Dashboard() {
                                           className={`
                                             inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-all select-none border cursor-pointer
                                             ${isMyReaction 
-                                              ? 'bg-brand-500/10 border-brand-500/30 text-brand-500 shadow-premium-sm font-semibold' 
+                                              ? 'bg-accent/10 border-accent/30 text-accent shadow-premium-sm font-semibold' 
                                               : 'bg-surface border-bordercolor text-text-secondary hover:text-text-primary hover:border-bordercolor-hover'}
                                           `}
                                           title={isMyReaction ? "Remove reaction" : "React with this emoji"}
@@ -954,7 +956,7 @@ export default function Dashboard() {
                                     {isMine && (
                                       <span>
                                         {msg.is_read === 1 ? (
-                                          <CheckCheck className="w-3 h-3 text-brand-500" />
+                                          <CheckCheck className="w-3 h-3 text-accent" />
                                         ) : (
                                           <Check className="w-3 h-3 text-text-muted" />
                                         )}
@@ -994,7 +996,7 @@ export default function Dashboard() {
                                 <button
                                   type="button"
                                   onClick={() => setActiveReactionMenuMessageId(activeReactionMenuMessageId === msg.id ? null : msg.id)}
-                                  className={`opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-surface text-text-secondary hover:text-text-primary cursor-pointer ${activeReactionMenuMessageId === msg.id ? 'opacity-100 text-brand-500 bg-surface' : ''}`}
+                                  className={`opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-surface text-text-secondary hover:text-text-primary cursor-pointer ${activeReactionMenuMessageId === msg.id ? 'opacity-100 text-accent bg-surface' : ''}`}
                                   title="React to message"
                                 >
                                   <Smile className="w-4 h-4" />
@@ -1019,7 +1021,7 @@ export default function Dashboard() {
                           url={activeConversation.avatar_url} 
                           name={activeConversation.display_name || activeConversation.username} 
                           sizeClass="w-7 h-7 border border-bordercolor" 
-                          initialsClass="text-[9.5px] text-brand-500" 
+                          initialsClass="text-[9.5px] text-accent" 
                         />
                         <div className="bg-received text-received-text border border-bordercolor px-3 py-2 rounded-2xl rounded-bl-none flex items-center gap-1 shadow-premium-sm">
                           <span className="w-1.5 h-1.5 bg-text-secondary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -1053,7 +1055,7 @@ export default function Dashboard() {
                     </div>
                     
                     <div className="flex-1 flex flex-col gap-1.5 min-w-0">
-                      <span className="text-[10px] font-bold text-brand-500 uppercase tracking-wide">Image Preview</span>
+                      <span className="text-[10px] font-bold text-accent uppercase tracking-wide">Image Preview</span>
                       <input 
                         type="text" 
                         value={imageCaption}
@@ -1076,7 +1078,7 @@ export default function Dashboard() {
                         type="button"
                         onClick={handleCancelImageUpload}
                         disabled={uploadingImage}
-                        className="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all cursor-pointer disabled:opacity-40"
+                        className="w-8.5 h-8.5 rounded-xl text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center cursor-pointer disabled:opacity-40"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -1084,7 +1086,7 @@ export default function Dashboard() {
                         type="button"
                         onClick={handleSendImage}
                         disabled={uploadingImage}
-                        className="p-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl transition-all shadow-premium-sm active:scale-95 cursor-pointer disabled:opacity-40"
+                        className="premium-btn premium-btn-primary w-8.5 h-8.5 p-0"
                       >
                         <Send className="w-3.5 h-3.5" />
                       </button>
@@ -1110,12 +1112,12 @@ export default function Dashboard() {
                 )}
 
                 {/* Input text form bar */}
-                <form onSubmit={handleSendMessage} className="flex items-center gap-2.5 bg-surface border border-bordercolor rounded-2xl px-3 py-1.5 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/10 transition-all">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-2 bg-surface border border-bordercolor rounded-2xl px-2.5 py-1.5 focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/15 transition-all">
                   
                   <button
                     type="button"
                     onClick={() => setShowEmojiBar(!showEmojiBar)}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${showEmojiBar ? 'text-brand-500 hover:bg-brand-500/10' : 'text-text-secondary hover:text-text-primary hover:bg-sidebar'}`}
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${showEmojiBar ? 'text-accent bg-accent/10' : 'text-text-secondary hover:text-text-primary hover:bg-sidebar'}`}
                     title="Toggle Emoji Drawer"
                   >
                     <Smile className="w-4 h-4" />
@@ -1124,7 +1126,7 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => imageFileInputRef.current?.click()}
-                    className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-sidebar transition-colors cursor-pointer"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-sidebar transition-all cursor-pointer"
                     title="Upload Image"
                   >
                     <Image className="w-4 h-4" />
@@ -1142,13 +1144,13 @@ export default function Dashboard() {
                     value={messageInput}
                     onChange={handleMessageChange}
                     placeholder="Type a message..."
-                    className="flex-1 bg-transparent text-xs text-text-primary placeholder:text-text-muted focus:outline-none border-none py-1.5 px-1.5 no-transition"
+                    className="flex-1 bg-transparent text-sm text-text-primary placeholder:text-text-muted focus:outline-none border-none py-2 px-2.5 no-transition"
                   />
 
                   <button
                     type="submit"
                     disabled={!messageInput.trim()}
-                    className="p-2 bg-brand-600 hover:bg-brand-500 disabled:opacity-40 disabled:hover:bg-brand-600 text-white rounded-xl transition-all shadow-premium-sm active:scale-95 shrink-0 cursor-pointer"
+                    className="w-9 h-9 flex items-center justify-center bg-accent hover:bg-accent-hover disabled:opacity-40 disabled:hover:bg-accent text-white rounded-xl transition-all shadow-premium-sm active:scale-95 shrink-0 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                   </button>
@@ -1163,7 +1165,7 @@ export default function Dashboard() {
               <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 animate-bounce">
                 <button
                   onClick={() => scrollToBottom('smooth')}
-                  className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-full shadow-premium-lg border border-brand-500/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 bg-accent hover:bg-accent-hover text-white font-bold text-xs rounded-full shadow-premium-lg border border-accent/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <ArrowRight className="w-3.5 h-3.5 rotate-90" />
                   New Messages Below
@@ -1174,16 +1176,16 @@ export default function Dashboard() {
         ) : (
           /* EMPTY STATE: Chat Welcome */
           <div className="flex-1 flex flex-col justify-center items-center p-8 text-center bg-chat bg-dot-pattern/50 relative">
-            <div className="max-w-xs animate-slide-up">
-              <div className="inline-flex items-center justify-center p-3.5 bg-sidebar border border-bordercolor rounded-2xl shadow-premium-md mb-5">
-                <MessageSquare className="w-7 h-7 text-brand-500" />
+            <div className="max-w-sm animate-slide-up premium-empty-state">
+              <div className="inline-flex items-center justify-center p-4 bg-sidebar border border-bordercolor rounded-2xl shadow-premium-sm mb-6">
+                <MessageSquare className="w-8 h-8 text-accent" />
               </div>
 
-              <h2 className="text-xl font-extrabold text-text-primary mb-1.5 font-plus-jakarta tracking-tight">
+              <h2 className="text-xl font-extrabold text-text-primary mb-2 font-plus-jakarta tracking-tight">
                 No active chat
               </h2>
               
-              <p className="text-xs text-text-secondary mb-5 leading-relaxed max-w-[240px] mx-auto">
+              <p className="text-sm text-text-secondary mb-6 leading-relaxed max-w-[280px] mx-auto">
                 Pick a contact on the left sidebar to start messaging, or open the friends tab to find contacts.
               </p>
 
@@ -1192,10 +1194,10 @@ export default function Dashboard() {
                   setFriendsModalOpen(true);
                   setFriendsActiveTab('list');
                 }}
-                className="px-4 py-2 bg-sidebar hover:bg-surface text-text-primary font-bold text-xs rounded-xl border border-bordercolor shadow-premium-sm active:scale-95 transition-all flex items-center gap-1.5 mx-auto cursor-pointer"
+                className="premium-btn premium-btn-secondary"
               >
                 <span>Friends list</span>
-                <ArrowRight className="w-3.5 h-3.5 text-brand-500" />
+                <ArrowRight className="w-3.5 h-3.5 text-accent" />
               </button>
             </div>
           </div>
@@ -1215,12 +1217,12 @@ export default function Dashboard() {
             {/* Header */}
             <div className="flex items-center justify-between p-4.5 border-b border-bordercolor bg-surface/30">
               <h2 className="text-md font-bold font-plus-jakarta text-text-primary flex items-center gap-2">
-                <Users className="w-4.5 h-4.5 text-brand-500" />
+                <Users className="w-4.5 h-4.5 text-accent" />
                 Friends Management
               </h2>
               <button 
                 onClick={() => setFriendsModalOpen(false)}
-                className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface transition-colors cursor-pointer flex items-center justify-center"
               >
                 <X className="w-4.5 h-4.5" />
               </button>
@@ -1230,9 +1232,9 @@ export default function Dashboard() {
             <div className="flex border-b border-bordercolor bg-surface/10">
               <button
                 onClick={() => setFriendsActiveTab('search')}
-                className={`flex-1 py-2.8 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+                className={`flex-1 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
                   friendsActiveTab === 'search' 
-                    ? 'border-brand-500 text-brand-500 bg-surface/30' 
+                    ? 'border-accent text-accent bg-surface/30' 
                     : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface/10'
                 }`}
               >
@@ -1240,9 +1242,9 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={() => setFriendsActiveTab('pending')}
-                className={`flex-1 py-2.8 text-xs font-semibold border-b-2 transition-all relative cursor-pointer ${
+                className={`flex-1 py-3 text-xs font-bold border-b-2 transition-all relative cursor-pointer ${
                   friendsActiveTab === 'pending' 
-                    ? 'border-brand-500 text-brand-500 bg-surface/30' 
+                    ? 'border-accent text-accent bg-surface/30' 
                     : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface/10'
                 }`}
               >
@@ -1255,9 +1257,9 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={() => setFriendsActiveTab('list')}
-                className={`flex-1 py-2.8 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+                className={`flex-1 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
                   friendsActiveTab === 'list' 
-                    ? 'border-brand-500 text-brand-500 bg-surface/30' 
+                    ? 'border-accent text-accent bg-surface/30' 
                     : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface/10'
                 }`}
               >
@@ -1285,7 +1287,7 @@ export default function Dashboard() {
                   <div className="flex-1 overflow-y-auto space-y-2">
                     {searching ? (
                       <div className="text-center py-12">
-                        <div className="w-5 h-5 border-2 border-brand-500/20 border-t-brand-500 rounded-full animate-spin mx-auto mb-2"></div>
+                        <div className="w-5 h-5 border-2 border-accent/20 border-t-accent rounded-full animate-spin mx-auto mb-2"></div>
                         <p className="text-[11px] text-text-secondary">Searching users list...</p>
                       </div>
                     ) : friendSearchQuery.trim() === '' ? (
@@ -1309,7 +1311,7 @@ export default function Dashboard() {
                                 url={sUser.avatar_url} 
                                 name={sUser.display_name || sUser.username} 
                                 sizeClass="w-8 h-8 border border-bordercolor" 
-                                initialsClass="text-xs text-brand-500" 
+                                initialsClass="text-xs text-accent" 
                               />
                               <div className="flex flex-col min-w-0">
                                 <span className="text-xs font-bold text-text-primary leading-tight truncate max-w-[150px]">{sUser.display_name || sUser.username}</span>
@@ -1332,16 +1334,16 @@ export default function Dashboard() {
                                   const reqItem = requests.received?.find(r => r.sender_id === sUser.id);
                                   if (reqItem) acceptFriendRequest(reqItem.request_id);
                                 }}
-                                className="px-2.5 py-1 bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer"
+                                className="premium-btn premium-btn-primary h-7.5 px-3.5 text-[10px]"
                               >
                                 Accept
                               </button>
                             ) : (
                               <button
                                 onClick={() => sendFriendRequest(sUser.id)}
-                                className="px-2.5 py-1 bg-surface border border-bordercolor hover:bg-surface/50 text-text-primary text-[10px] font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                                className="premium-btn premium-btn-secondary h-7.5 px-3 text-[10px]"
                               >
-                                <UserPlus className="w-3 h-3 text-brand-500" />
+                                <UserPlus className="w-3.5 h-3.5 text-accent" />
                                 Add Friend
                               </button>
                             )}
@@ -1357,7 +1359,7 @@ export default function Dashboard() {
               {friendsActiveTab === 'pending' && (
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-[9px] font-bold text-brand-500 uppercase tracking-wider mb-1.5">Received ({requests.received?.length || 0})</h3>
+                    <h3 className="text-[9px] font-bold text-accent uppercase tracking-wider mb-1.5">Received ({requests.received?.length || 0})</h3>
                     {(!requests.received || requests.received.length === 0) ? (
                       <p className="text-[11px] text-text-muted italic py-1">No requests received</p>
                     ) : (
@@ -1368,7 +1370,7 @@ export default function Dashboard() {
                               url={req.avatar_url} 
                               name={req.display_name || req.username} 
                               sizeClass="w-8 h-8 border border-bordercolor" 
-                              initialsClass="text-xs text-brand-500" 
+                              initialsClass="text-xs text-accent" 
                             />
                             <div className="flex flex-col min-w-0">
                               <span className="text-xs font-bold text-text-primary leading-tight truncate max-w-[150px]">{req.display_name || req.username}</span>
@@ -1379,13 +1381,13 @@ export default function Dashboard() {
                           <div className="flex gap-1.5">
                             <button
                               onClick={() => rejectFriendRequest(req.request_id)}
-                              className="px-2 py-0.8 text-[10px] font-bold text-text-secondary hover:text-text-primary bg-surface rounded-lg border border-bordercolor hover:bg-surface/50 transition-colors cursor-pointer"
+                              className="premium-btn premium-btn-secondary h-7.5 px-3 text-[10px]"
                             >
                               Ignore
                             </button>
                             <button
                               onClick={() => acceptFriendRequest(req.request_id)}
-                              className="px-2.5 py-0.8 text-[10px] font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-lg transition-colors cursor-pointer"
+                              className="premium-btn premium-btn-primary h-7.5 px-3 text-[10px]"
                             >
                               Accept
                             </button>
@@ -1409,7 +1411,7 @@ export default function Dashboard() {
                               url={req.avatar_url} 
                               name={req.display_name || req.username} 
                               sizeClass="w-8 h-8 border border-bordercolor" 
-                              initialsClass="text-xs text-brand-500" 
+                              initialsClass="text-xs text-accent" 
                             />
                             <div className="flex flex-col min-w-0">
                               <span className="text-xs font-bold text-text-primary leading-tight truncate max-w-[150px]">{req.display_name || req.username}</span>
@@ -1419,7 +1421,7 @@ export default function Dashboard() {
                           
                           <button
                             onClick={() => rejectFriendRequest(req.request_id)}
-                            className="px-2 py-0.8 text-[10px] font-bold text-red-500 hover:bg-red-500/10 rounded-lg border border-red-500/10 transition-colors cursor-pointer"
+                            className="premium-btn premium-btn-danger h-7.5 px-3 text-[10px]"
                           >
                             Cancel
                           </button>
@@ -1449,7 +1451,7 @@ export default function Dashboard() {
                                 url={friend.avatar_url} 
                                 name={friend.display_name || friend.username} 
                                 sizeClass="w-8 h-8 border border-bordercolor" 
-                                initialsClass="text-xs text-brand-500" 
+                                initialsClass="text-xs text-accent" 
                               />
                               {isOnline && (
                                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-sidebar"></span>
@@ -1496,7 +1498,7 @@ export default function Dashboard() {
                                   console.error(error);
                                 }
                               }}
-                              className="p-1.5 rounded-lg text-brand-500 hover:bg-brand-500/10 transition-colors cursor-pointer"
+                              className="w-8 h-8 rounded-lg text-accent hover:bg-accent/10 transition-colors flex items-center justify-center cursor-pointer"
                               title="Send Message"
                             >
                               <MessageSquare className="w-4 h-4" />
@@ -1504,7 +1506,7 @@ export default function Dashboard() {
                             
                             <button
                               onClick={() => removeFriend(friend.id)}
-                              className="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                              className="w-8 h-8 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors flex items-center justify-center cursor-pointer"
                               title="Unfriend"
                             >
                               <Trash2 className="w-4 h-4" />

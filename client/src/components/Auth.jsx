@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { MessageSquare, Lock, Mail, User, Sparkles, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { MessageSquare, Lock, Mail, User, Sparkles, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function Auth() {
   const { login, register } = useApp();
@@ -74,20 +74,20 @@ export default function Auth() {
             
             {/* Username / Email field for Login or Username for Register */}
             <div>
-              <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider">
+              <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider select-none">
                 {isLogin ? 'Username or Email' : 'Username'}
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
+              <div className="premium-input-wrapper">
+                <div className="premium-input-icon left-3.5">
                   <User className="w-4 h-4" />
                 </div>
                 <input
                   type="text"
                   required
-                  placeholder={isLogin ? "enter username or email" : "choose a username"}
+                  placeholder={isLogin ? "Enter username or email" : "Choose a username"}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="premium-input w-full pl-10 pr-4 py-2.8 rounded-xl text-xs placeholder:text-text-muted focus:outline-none"
+                  className="premium-input premium-input-with-icon-left"
                 />
               </div>
             </div>
@@ -95,11 +95,11 @@ export default function Auth() {
             {/* Email Field - Register only */}
             {!isLogin && (
               <div className="animate-fade-in">
-                <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider">
+                <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider select-none">
                   Email Address
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
+                <div className="premium-input-wrapper">
+                  <div className="premium-input-icon left-3.5">
                     <Mail className="w-4 h-4" />
                   </div>
                   <input
@@ -108,7 +108,7 @@ export default function Auth() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="premium-input w-full pl-10 pr-4 py-2.8 rounded-xl text-xs placeholder:text-text-muted focus:outline-none"
+                    className="premium-input premium-input-with-icon-left"
                   />
                 </div>
               </div>
@@ -117,11 +117,11 @@ export default function Auth() {
             {/* Display Name Field - Register only */}
             {!isLogin && (
               <div className="animate-fade-in">
-                <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider">
+                <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider select-none">
                   Display Name <span className="text-text-muted font-normal">(Optional)</span>
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
+                <div className="premium-input-wrapper">
+                  <div className="premium-input-icon left-3.5">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <input
@@ -129,7 +129,7 @@ export default function Auth() {
                     placeholder="e.g. John Doe"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="premium-input w-full pl-10 pr-4 py-2.8 rounded-xl text-xs placeholder:text-text-muted focus:outline-none"
+                    className="premium-input premium-input-with-icon-left"
                   />
                 </div>
               </div>
@@ -137,11 +137,11 @@ export default function Auth() {
 
             {/* Password Field */}
             <div>
-              <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider">
+              <label className="block text-text-secondary text-xs font-semibold mb-1.5 uppercase tracking-wider select-none">
                 Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
+              <div className="premium-input-wrapper">
+                <div className="premium-input-icon left-3.5">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -150,7 +150,7 @@ export default function Auth() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="premium-input w-full pl-10 pr-11 py-2.8 rounded-xl text-xs placeholder:text-text-muted focus:outline-none"
+                  className="premium-input premium-input-with-icon-left premium-input-with-icon-right"
                 />
                 <button
                   type="button"
@@ -166,10 +166,10 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2.5 py-2.8 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-xl transition-all duration-150 flex items-center justify-center gap-1.5 shadow-premium-sm active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+              className="premium-btn premium-btn-primary w-full mt-2.5"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
                   <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
