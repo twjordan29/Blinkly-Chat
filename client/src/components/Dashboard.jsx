@@ -98,7 +98,8 @@ export default function Dashboard() {
     sendTypingStop,
     toggleSound,
     requestNotificationPermission,
-    toggleMessageReaction
+    toggleMessageReaction,
+    navigate
   } = useApp();
 
   const [chatSearchQuery, setChatSearchQuery] = useState('');
