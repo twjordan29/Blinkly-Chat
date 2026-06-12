@@ -88,11 +88,12 @@ async function broadcastStatusToFriends(userId, isOnline) {
 
     // Fetch privacy settings
     const [privacy] = await pool.query('SELECT show_online_status, show_last_seen, last_seen FROM users WHERE id = ?', [userId]);
-    const showOnline = privacy.length > 0 ? privacy[0].show_online_status !== 0 : true;
-    const showLastSeen = privacy[0].show_last_seen !== 0 : true;
+    const hasPrivacy = privacy && privacy.length > 0;
+    const showOnline = hasPrivacy ? privacy[0].show_online_status !== 0 : true;
+    const showLastSeen = hasPrivacy ? privacy[0].show_last_seen !== 0 : true;
 
     const broadcastOnline = showOnline ? isOnline : false;
-    const broadcastLastSeen = showLastSeen ? (privacy[0]?.last_seen || new Date()) : null;
+    const broadcastLastSeen = showLastSeen ? ((hasPrivacy && privacy[0].last_seen) || new Date()) : null;
 
     friends.forEach(friend => {
       const friendSockets = onlineUsers.get(friend.id);

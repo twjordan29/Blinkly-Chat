@@ -73,7 +73,8 @@ async function broadcastStatusUpdate(req, userId) {
     `, [userId, userId]);
 
     const [privacy] = await pool.query('SELECT is_online, show_online_status, show_last_seen, last_seen FROM users WHERE id = ?', [userId]);
-    if (privacy.length === 0) return;
+    const hasPrivacy = privacy && privacy.length > 0;
+    if (!hasPrivacy) return;
     const isOnline = privacy[0].is_online;
     const showOnline = privacy[0].show_online_status !== 0;
     const showLastSeen = privacy[0].show_last_seen !== 0;
