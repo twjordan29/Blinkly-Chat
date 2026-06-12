@@ -17,7 +17,16 @@ export default function Settings() {
     updateMeProfile,
     uploadMeAvatar,
     deleteMeAvatar,
-    updateAppearance
+    updateAppearance,
+    deferredPrompt,
+    isInstallAvailable,
+    isStandalone,
+    triggerInstallPrompt,
+    pushPermissionState,
+    isPushSubscribed,
+    subscribeToPushNotifications,
+    unsubscribeFromPushNotifications,
+    updatePushPermissionState
   } = useApp();
 
   const [activeSection, setActiveSection] = useState('profile');
@@ -312,12 +321,13 @@ export default function Settings() {
   const navItems = [
     { id: 'profile', label: 'My Profile', icon: User },
     { id: 'appearance', label: 'Appearance', icon: Paintbrush },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'account', label: 'Account & Security', icon: Shield },
-    { id: 'privacy', label: 'Privacy settings', icon: Eye }
+    { id: 'privacy', label: 'Privacy Settings', icon: Eye }
   ];
 
   return (
-    <div className="min-h-screen bg-chat text-text-primary flex flex-col relative overflow-hidden pb-12">
+    <div className="min-h-screen bg-chat text-text-primary flex flex-col relative pb-20 md:pb-12">
       {/* Premium background mesh overlays */}
       <div className="absolute inset-0 bg-dot-pattern opacity-30 select-none pointer-events-none"></div>
       <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-accent/5 to-transparent select-none pointer-events-none"></div>
@@ -397,10 +407,32 @@ export default function Settings() {
         {/* RIGHT CONTENT FRAME */}
         <div className="flex-1 space-y-6">
 
+          {/* Mobile Navigation Tabs */}
+          <div className="flex md:hidden overflow-x-auto gap-2 py-2 select-none border-b border-bordercolor mb-4 no-scrollbar">
+            {navItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                    isActive 
+                      ? 'bg-accent/15 text-accent border border-accent/25' 
+                      : 'bg-surface/40 text-text-secondary border border-bordercolor hover:text-text-primary'
+                  }`}
+                >
+                  <Icon className="w-3.8 h-3.8 shrink-0" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* ===================================================
               PROFILE SECTION: Editable bio, details, avatar
              =================================================== */}
-          {(isMobile || activeSection === 'profile') && (
+          {(activeSection === 'profile') && (
             <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <User className="w-4.5 h-4.5 text-accent" />
@@ -583,7 +615,7 @@ export default function Settings() {
           {/* ===================================================
               APPEARANCE SECTION: system | light | dark theme preferences
              =================================================== */}
-          {(isMobile || activeSection === 'appearance') && (
+          {(activeSection === 'appearance') && (
             <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <Paintbrush className="w-4.5 h-4.5 text-accent" />
@@ -656,6 +688,149 @@ export default function Settings() {
                   </div>
 
                 </div>
+
+                {/* PWA Install Section */}
+                {!isStandalone && (
+                  <>
+                    <hr className="my-5 border-bordercolor" />
+                    
+                    <div className="bg-surface/30 border border-bordercolor p-4.5 rounded-2xl">
+                      <span className="text-xs font-bold text-text-primary block mb-1">Install Blinkly App</span>
+                      <p className="text-[10.5px] text-text-secondary leading-relaxed mb-4">
+                        Install Blinkly on your home screen or desktop for a fast, full-screen, standalone app experience with support for background notifications.
+                      </p>
+
+                      {isInstallAvailable ? (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              await triggerInstallPrompt();
+                              triggerToast('Installation prompt triggered!');
+                            } catch (err) {
+                              console.error(err);
+                            }
+                          }}
+                          className="premium-btn premium-btn-primary w-full sm:w-auto text-xs cursor-pointer"
+                        >
+                          Install Blinkly
+                        </button>
+                      ) : (
+                        // Check if it's iOS
+                        /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream ? (
+                          <div className="p-3.5 bg-accent/5 border border-accent/15 rounded-xl flex items-start gap-3">
+                            <Info className="w-4.5 h-4.5 text-accent shrink-0 mt-0.5" />
+                            <div className="text-[10.5px] text-text-secondary leading-relaxed">
+                              <span className="font-bold text-text-primary block mb-0.5">Install on iOS / Safari:</span>
+                              Tap the <span className="font-semibold text-accent">Share button</span> (square with up arrow) in Safari's bottom toolbar, scroll down, and select <span className="font-semibold text-accent">"Add to Home Screen"</span>.
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-[10.5px] text-text-muted italic">
+                            App installation is already complete or not supported on this browser. Try Chrome, Edge, or Safari.
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </>
+                )}
+
+              </div>
+            </div>
+          )}
+
+          {/* ===================================================
+              NOTIFICATIONS SECTION: Toggle push notification subscription
+             =================================================== */}
+          {activeSection === 'notifications' && (
+            <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
+              <div className="flex items-center gap-2 mb-5 select-none">
+                <Bell className="w-4.5 h-4.5 text-accent" />
+                <h3 className="text-[13px] font-extrabold text-text-primary uppercase tracking-wider font-plus-jakarta">Notifications</h3>
+              </div>
+
+              <div className="space-y-6">
+                <div className="bg-surface/30 border border-bordercolor p-4.5 rounded-2xl">
+                  <span className="text-xs font-bold text-text-primary block mb-1">Web Push Notifications</span>
+                  <p className="text-[10.5px] text-text-secondary leading-relaxed">
+                    Get instantly notified on your device when friends send you messages. This works even when the app is running in the background or minimized.
+                  </p>
+
+                  <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-surface/50 border border-bordercolor/80 rounded-xl">
+                    <div className="flex-1 select-none">
+                      <span className="text-[10px] text-text-secondary font-bold uppercase tracking-wider block mb-1">Permission Status</span>
+                      <div className="flex items-center gap-2">
+                        {pushPermissionState === 'Granted' && (
+                          <>
+                            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                            <span className="text-xs font-bold text-green-500">Active / Allowed</span>
+                          </>
+                        )}
+                        {pushPermissionState === 'Default' && (
+                          <>
+                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                            <span className="text-xs font-bold text-amber-500">Ready to configure</span>
+                          </>
+                        )}
+                        {pushPermissionState === 'Denied' && (
+                          <>
+                            <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                            <span className="text-xs font-bold text-red-500">Blocked / Disabled</span>
+                          </>
+                        )}
+                        {pushPermissionState === 'Unsupported' && (
+                          <>
+                            <span className="w-2.5 h-2.5 rounded-full bg-gray-500"></span>
+                            <span className="text-xs font-bold text-text-muted">Not Supported by browser</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="shrink-0">
+                      {pushPermissionState === 'Unsupported' && (
+                        <span className="text-[10.5px] text-text-muted italic">Push is unavailable in this browser</span>
+                      )}
+                      {pushPermissionState === 'Denied' && (
+                        <div className="text-[10.5px] text-red-400 font-semibold max-w-[200px]">
+                          Notification permission is blocked. Reset permission in your browser address bar site settings to enable.
+                        </div>
+                      )}
+                      {pushPermissionState === 'Default' && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              await subscribeToPushNotifications();
+                              triggerToast('Push notifications enabled successfully!');
+                            } catch (err) {
+                              triggerToast(err.message || 'Failed to enable notifications', 'error');
+                            }
+                          }}
+                          className="premium-btn premium-btn-primary py-2 px-4 text-xs cursor-pointer"
+                        >
+                          Enable Notifications
+                        </button>
+                      )}
+                      {pushPermissionState === 'Granted' && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              await unsubscribeFromPushNotifications();
+                              triggerToast('Push notifications disabled.');
+                            } catch (err) {
+                              triggerToast('Failed to disable notifications', 'error');
+                            }
+                          }}
+                          className="premium-btn premium-btn-secondary py-2 px-4 text-xs border-red-500/20 text-red-500 hover:bg-red-500/10 cursor-pointer"
+                        >
+                          Disable Notifications
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -663,7 +838,7 @@ export default function Settings() {
           {/* ===================================================
               ACCOUNT & SECURITY SECTION: password change, details
              =================================================== */}
-          {(isMobile || activeSection === 'account') && (
+          {(activeSection === 'account') && (
             <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <Shield className="w-4.5 h-4.5 text-accent" />
@@ -788,7 +963,7 @@ export default function Settings() {
           {/* ===================================================
               PRIVACY SECTION: status, last seen, friend requests
              =================================================== */}
-          {(isMobile || activeSection === 'privacy') && (
+          {(activeSection === 'privacy') && (
             <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <Eye className="w-4.5 h-4.5 text-accent" />

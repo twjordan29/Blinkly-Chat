@@ -13,6 +13,8 @@ import friendRoutes from './routes/friends.js';
 import chatRoutes from './routes/chat.js';
 import adminRoutes from './routes/admin.js';
 import meRoutes from './routes/me.js';
+import pushRoutes from './routes/push.js';
+import { triggerMessageNotification } from './utils/pushManager.js';
 
 dotenv.config();
 
@@ -70,6 +72,7 @@ app.use('/api/friends', friendRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/me', meRoutes);
+app.use('/api/push', pushRoutes);
 
 // Basic health check endpoint
 app.get('/health', (req, res) => {
@@ -223,6 +226,9 @@ io.on('connection', async (socket) => {
           io.to(sId).emit('message_received', messageObj);
         });
       }
+
+      // 6. Trigger push notification
+      triggerMessageNotification(userId, receiver_id, messageObj);
 
       // Acknowledge delivery
       if (callback) callback({ success: true, message: messageObj });

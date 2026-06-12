@@ -456,6 +456,18 @@ export const AppProvider = ({ children }) => {
         setFriends(friendsData.friends);
         setRequests(requestsData);
         setConversations(chatsData.conversations);
+
+        // Check for conversation_id in query params
+        const params = new URLSearchParams(window.location.search);
+        const queryConvId = params.get('conversation_id');
+        if (queryConvId) {
+          const conv = chatsData.conversations.find(c => c.conversation_id === parseInt(queryConvId));
+          if (conv) {
+            selectConversation(conv);
+            // Clean up the URL query params without reloading
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
       } catch (error) {
         console.error('Error loading initial app data:', error);
       } finally {
@@ -890,6 +902,202 @@ export const AppProvider = ({ children }) => {
     setNotificationsEnabled(permission === 'granted');
   };
 
+  // PWA Install State
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstallAvailable, setIsInstallAvailable] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallAvailable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    setIsStandalone(Boolean(isStandaloneMode));
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const triggerInstallPrompt = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    setDeferredPrompt(null);
+    setIsInstallAvailable(false);
+  };
+
+  // Push notification permissions state
+  const [pushPermissionState, setPushPermissionState] = useState('Default');
+  const [isPushSubscribed, setIsPushSubscribed] = useState(false);
+
+  const urlBase64ToUint8Array = (base64String) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
+  const updatePushPermissionState = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      setPushPermissionState('Unsupported');
+      setIsPushSubscribed(false);
+      return;
+    }
+
+    const permission = Notification.permission;
+    if (permission === 'default') {
+      setPushPermissionState('Default');
+    } else if (permission === 'granted') {
+      setPushPermissionState('Granted');
+    } else if (permission === 'denied') {
+      setPushPermissionState('Denied');
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      setIsPushSubscribed(!!subscription);
+    } catch (err) {
+      console.warn('Error checking push subscription state:', err);
+      setIsPushSubscribed(false);
+    }
+  };
+
+  useEffect(() => {
+    updatePushPermissionState();
+  }, [user]);
+
+  const subscribeToPushNotifications = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      throw new Error('Push notifications are not supported in this browser.');
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      updatePushPermissionState();
+      throw new Error('Notification permission was denied.');
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      
+      const { publicKey } = await apiFetch('/push/vapid-key');
+      if (!publicKey) {
+        throw new Error('VAPID public key not found on server');
+      }
+
+      const applicationServerKey = urlBase64ToUint8Array(publicKey);
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey
+      });
+
+      const subJson = subscription.toJSON();
+      
+      await apiFetch('/push/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: subJson.keys.p256dh,
+            auth: subJson.keys.auth
+          }
+        })
+      });
+
+      await updatePushPermissionState();
+      return true;
+    } catch (err) {
+      console.error('Failed to subscribe to push notifications:', err);
+      await updatePushPermissionState();
+      throw err;
+    }
+  };
+
+  const unsubscribeFromPushNotifications = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      return;
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) {
+        await apiFetch('/push/unsubscribe', {
+          method: 'DELETE',
+          body: JSON.stringify({ endpoint: subscription.endpoint })
+        });
+        await subscription.unsubscribe();
+      }
+      await updatePushPermissionState();
+      return true;
+    } catch (err) {
+      console.error('Failed to unsubscribe from push notifications:', err);
+      await updatePushPermissionState();
+      throw err;
+    }
+  };
+
+  // SW SELECT_CONVERSATION Event Listener
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      const handleServiceWorkerMessage = (event) => {
+        if (event.data && event.data.type === 'SELECT_CONVERSATION') {
+          const { conversationId } = event.data;
+          console.log('Received SELECT_CONVERSATION from SW:', conversationId);
+          if (conversations && conversations.length > 0) {
+            const conv = conversations.find(c => c.conversation_id === parseInt(conversationId));
+            if (conv) {
+              selectConversation(conv);
+              navigate('/');
+            } else {
+              apiFetch('/chat/conversations')
+                .then(data => {
+                  setConversations(data.conversations);
+                  const found = data.conversations.find(c => c.conversation_id === parseInt(conversationId));
+                  if (found) {
+                    selectConversation(found);
+                    navigate('/');
+                  }
+                })
+                .catch(err => console.error('Failed to reload conversations for SW selection:', err));
+            }
+          } else {
+            apiFetch('/chat/conversations')
+              .then(data => {
+                setConversations(data.conversations);
+                const found = data.conversations.find(c => c.conversation_id === parseInt(conversationId));
+                if (found) {
+                  selectConversation(found);
+                  navigate('/');
+                }
+              })
+              .catch(err => console.error('Failed to load conversations for SW selection:', err));
+          }
+        }
+      };
+
+      navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+      return () => {
+        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+      };
+    }
+  }, [conversations]);
+
   return (
     <AppContext.Provider value={{
       user,
@@ -934,7 +1142,16 @@ export const AppProvider = ({ children }) => {
       updateMeProfile,
       uploadMeAvatar,
       deleteMeAvatar,
-      updateAppearance
+      updateAppearance,
+      deferredPrompt,
+      isInstallAvailable,
+      isStandalone,
+      triggerInstallPrompt,
+      pushPermissionState,
+      isPushSubscribed,
+      subscribeToPushNotifications,
+      unsubscribeFromPushNotifications,
+      updatePushPermissionState
     }}>
       {children}
     </AppContext.Provider>

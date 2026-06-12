@@ -4,7 +4,7 @@ import {
   MessageSquare, Users, Settings, LogOut, Search, Send, Smile, 
   ChevronLeft, UserPlus, Check, CheckCheck, Shield, Volume2, 
   VolumeX, Bell, BellOff, Trash2, ArrowRight, UserCheck, X, Sparkles, 
-  AlertCircle, Sun, Moon, Phone, Video, Info, Image
+  AlertCircle, Sun, Moon, Phone, Video, Info, Image, MoreVertical
 } from 'lucide-react';
 import ProfileModal from './ProfileModal';
 import AdminPanel from './AdminPanel';
@@ -107,7 +107,8 @@ export default function Dashboard() {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [messageInput, setMessageInput] = useState('');
-  const [showEmojiBar, setShowEmojiBar] = useState(true);
+  const [showEmojiBar, setShowEmojiBar] = useState(window.innerWidth >= 768);
+  const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
 
   // Image Upload State (Phase 2)
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -323,6 +324,12 @@ export default function Dashboard() {
     setImageCaption('');
     setImageError('');
     setHasNewMessagesBadge(false);
+    setHeaderMenuOpen(false);
+
+    // Hide emoji bar on mobile when switching conversations
+    if (window.innerWidth < 768) {
+      setShowEmojiBar(false);
+    }
   }, [activeConversation]);
 
   // Keep chat pinned to bottom when recipient starts/stops typing
@@ -411,7 +418,7 @@ export default function Dashboard() {
   const pendingRequestsCount = requests.received?.length || 0;
 
   return (
-    <div className="h-screen w-screen flex bg-surface text-text-primary overflow-hidden relative font-sans">
+    <div className="h-[100dvh] w-full flex bg-surface text-text-primary overflow-hidden relative font-sans">
       
       {/* 1. LEFT SIDEBAR PANEL: Desktop width exactly 340px */}
       <div className={`
@@ -690,7 +697,7 @@ export default function Dashboard() {
                   <Avatar 
                     url={activeConversation.avatar_url} 
                     name={activeConversation.display_name || activeConversation.username} 
-                    sizeClass="w-8.5 h-8.5 border border-bordercolor" 
+                    sizeClass="w-8 h-8 md:w-8.5 h-8.5 border border-bordercolor" 
                     initialsClass="text-xs text-accent" 
                   />
                   {(onlineFriends.has(activeConversation.other_user_id) || activeConversation.is_online === 1) && (
@@ -699,10 +706,10 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-text-primary truncate font-plus-jakarta leading-none mb-0.5">
+                  <span className="text-[11.5px] md:text-xs font-bold text-text-primary truncate font-plus-jakarta leading-none mb-0.5">
                     {activeConversation.display_name || activeConversation.username}
                   </span>
-                  <span className="text-[9.5px] text-text-muted">
+                  <span className="text-[9px] md:text-[9.5px] text-text-muted">
                     {isRecipientTyping ? (
                       <span className="text-accent font-bold animate-pulse">typing...</span>
                     ) : (onlineFriends.has(activeConversation.other_user_id) || activeConversation.is_online === 1) ? (
@@ -715,26 +722,78 @@ export default function Dashboard() {
               </div>
 
               {/* Right-side action details */}
-              <div className="flex items-center gap-1">
-                <button 
-                  className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
-                  title="Voice Call (V2)"
-                >
-                  <Phone className="w-4 h-4" />
-                </button>
-                <button 
-                  className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
-                  title="Video Call (V2)"
-                >
-                  <Video className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => removeFriend(activeConversation.other_user_id)}
-                  className="w-9 h-9 rounded-xl text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-95 flex items-center justify-center cursor-pointer"
-                  title="Remove friend (unfriend)"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+              <div className="flex items-center gap-1 relative">
+                {/* Desktop view: direct buttons */}
+                <div className="hidden sm:flex items-center gap-1">
+                  <button 
+                    className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
+                    title="Voice Call (V2)"
+                  >
+                    <Phone className="w-4 h-4" />
+                  </button>
+                  <button 
+                    className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
+                    title="Video Call (V2)"
+                  >
+                    <Video className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => removeFriend(activeConversation.other_user_id)}
+                    className="w-9 h-9 rounded-xl text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+                    title="Remove friend (unfriend)"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Mobile view: more vertical dots */}
+                <div className="sm:hidden">
+                  <button
+                    onClick={() => setHeaderMenuOpen(!headerMenuOpen)}
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${headerMenuOpen ? 'text-accent bg-accent/10' : 'text-text-secondary hover:text-text-primary hover:bg-surface'}`}
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+
+                  {headerMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-30" onClick={() => setHeaderMenuOpen(false)} />
+                      <div className="absolute right-0 top-10 w-40 rounded-xl bg-sidebar border border-bordercolor p-1.5 shadow-premium-lg z-40 animate-scale-in">
+                        <button
+                          onClick={() => {
+                            setHeaderMenuOpen(false);
+                            alert("Voice calling is coming soon in V2!");
+                          }}
+                          className="w-full text-left px-3 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface rounded-lg transition-colors flex items-center gap-2"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          <span>Voice Call</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setHeaderMenuOpen(false);
+                            alert("Video calling is coming soon in V2!");
+                          }}
+                          className="w-full text-left px-3 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-surface rounded-lg transition-colors flex items-center gap-2"
+                        >
+                          <Video className="w-3.5 h-3.5" />
+                          <span>Video Call</span>
+                        </button>
+                        <hr className="my-1 border-bordercolor" />
+                        <button
+                          onClick={() => {
+                            setHeaderMenuOpen(false);
+                            removeFriend(activeConversation.other_user_id);
+                          }}
+                          className="w-full text-left px-3 py-2.5 text-xs font-bold text-red-500 hover:bg-red-500/10 rounded-lg transition-colors flex items-center gap-2"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove Friend</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
 
             </div>
@@ -1039,8 +1098,8 @@ export default function Dashboard() {
             </div>
 
             {/* Composer/Input: Centers container inside same 950px column */}
-            <div className="bg-sidebar border-t border-bordercolor w-full shrink-0 shadow-premium-md">
-              <div className="max-w-[950px] mx-auto w-full px-6 py-3">
+            <div className="bg-sidebar border-t border-bordercolor w-full shrink-0 shadow-premium-md pb-[env(safe-area-inset-bottom)]">
+              <div className="max-w-[950px] mx-auto w-full px-4 md:px-6 py-2.5 md:py-3">
                 
                 {/* Floating Image Upload Preview (Phase 2) */}
                 {imagePreviewUrl && (
@@ -1112,7 +1171,7 @@ export default function Dashboard() {
                 )}
 
                 {/* Input text form bar */}
-                <form onSubmit={handleSendMessage} className="flex items-center gap-2 bg-surface border border-bordercolor rounded-2xl px-2.5 py-1.5 focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/15 transition-all">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-2 bg-surface border border-bordercolor rounded-2xl px-2.5 py-1 focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/15 transition-all min-h-[44px]">
                   
                   <button
                     type="button"
@@ -1150,9 +1209,9 @@ export default function Dashboard() {
                   <button
                     type="submit"
                     disabled={!messageInput.trim()}
-                    className="w-9 h-9 flex items-center justify-center bg-accent hover:bg-accent-hover disabled:opacity-40 disabled:hover:bg-accent text-white rounded-xl transition-all shadow-premium-sm active:scale-95 shrink-0 cursor-pointer"
+                    className="w-10 h-10 flex items-center justify-center bg-accent hover:bg-accent-hover disabled:opacity-40 disabled:hover:bg-accent text-white rounded-xl transition-all shadow-premium-sm active:scale-[0.98] shrink-0 cursor-pointer"
                   >
-                    <Send className="w-3.5 h-3.5" />
+                    <Send className="w-4 h-4" />
                   </button>
 
                  </form>

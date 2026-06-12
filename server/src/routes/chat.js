@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import sizeOf from 'image-size';
+import { triggerMessageNotification } from '../utils/pushManager.js';
 
 const router = express.Router();
 
@@ -305,6 +306,12 @@ router.post('/conversations/:conversation_id/messages/image', authMiddleware, (r
         });
       }
     });
+
+    // Send push notification to receiver
+    const receiver = participantsList.find(p => Number(p.user_id) !== Number(userId));
+    if (receiver) {
+      triggerMessageNotification(userId, receiver.user_id, messageObj);
+    }
 
     return res.json({ success: true, message: messageObj });
   } catch (error) {
