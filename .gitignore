@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+.vite/
+
+# Uploads
+uploads/
+server/uploads/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
