@@ -18,9 +18,11 @@ export default function Settings() {
     uploadMeAvatar,
     deleteMeAvatar,
     updateAppearance,
-    deferredPrompt,
+    hasDeferredPrompt,
     isInstallAvailable,
     isStandalone,
+    isIosDevice,
+    isPwaInstallSupported,
     triggerInstallPrompt,
     pushPermissionState,
     isPushSubscribed,
@@ -700,15 +702,18 @@ export default function Settings() {
                         Install Blinkly on your home screen or desktop for a fast, full-screen, standalone app experience with support for background notifications.
                       </p>
 
-                      {isInstallAvailable ? (
+                      {isInstallAvailable && hasDeferredPrompt && isPwaInstallSupported ? (
                         <button
                           type="button"
                           onClick={async () => {
                             try {
-                              await triggerInstallPrompt();
-                              triggerToast('Installation prompt triggered!');
+                              const outcome = await triggerInstallPrompt();
+                              triggerToast(outcome === 'accepted' ? 'Blinkly installation started.' : 'Install prompt dismissed.');
                             } catch (err) {
-                              console.error(err);
+                              if (import.meta.env.DEV) {
+                                console.error(err);
+                              }
+                              triggerToast(err.message || 'Unable to show install prompt', 'error');
                             }
                           }}
                           className="premium-btn premium-btn-primary w-full sm:w-auto text-xs cursor-pointer"
@@ -716,8 +721,7 @@ export default function Settings() {
                           Install Blinkly
                         </button>
                       ) : (
-                        // Check if it's iOS
-                        /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream ? (
+                        isIosDevice ? (
                           <div className="p-3.5 bg-accent/5 border border-accent/15 rounded-xl flex items-start gap-3">
                             <Info className="w-4.5 h-4.5 text-accent shrink-0 mt-0.5" />
                             <div className="text-[10.5px] text-text-secondary leading-relaxed">

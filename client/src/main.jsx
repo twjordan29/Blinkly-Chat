@@ -8,10 +8,14 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then(registration => {
-        console.log('SW registered: ', registration);
+        if (import.meta.env.DEV) {
+          console.info('SW registered: ', registration);
+        }
       })
       .catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
+        if (import.meta.env.DEV) {
+          console.warn('SW registration failed: ', registrationError);
+        }
       });
   });
 }

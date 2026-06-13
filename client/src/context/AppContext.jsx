@@ -928,34 +928,82 @@ export const AppProvider = ({ children }) => {
   };
 
   // PWA Install State
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const deferredPromptRef = useRef(null);
+  const hasCapturedInstallPromptRef = useRef(false);
+  const [hasDeferredPrompt, setHasDeferredPrompt] = useState(false);
   const [isInstallAvailable, setIsInstallAvailable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [isIosDevice, setIsIosDevice] = useState(false);
+  const [isPwaInstallSupported, setIsPwaInstallSupported] = useState(false);
 
   useEffect(() => {
+    const isDev = import.meta.env.DEV;
+    const userAgent = window.navigator.userAgent || '';
+    const isIos = /iPad|iPhone|iPod/.test(userAgent) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || Boolean(window.navigator.standalone);
+    const isSupportedInstallBrowser = !isIos && (
+      /Chrome|Chromium|Edg|SamsungBrowser/.test(userAgent) ||
+      (/Android/.test(userAgent) && !/Firefox/.test(userAgent))
+    );
+
+    setIsIosDevice(isIos);
+    setIsStandalone(isStandaloneMode);
+    setIsPwaInstallSupported(isSupportedInstallBrowser);
+
     const handleBeforeInstallPrompt = (e) => {
+      if (hasCapturedInstallPromptRef.current || isStandaloneMode || !isSupportedInstallBrowser) {
+        return;
+      }
+
       e.preventDefault();
-      setDeferredPrompt(e);
+      deferredPromptRef.current = e;
+      hasCapturedInstallPromptRef.current = true;
+      setHasDeferredPrompt(true);
       setIsInstallAvailable(true);
+
+      if (isDev) {
+        console.info('Blinkly PWA install prompt is ready.');
+      }
+    };
+
+    const handleAppInstalled = () => {
+      deferredPromptRef.current = null;
+      setHasDeferredPrompt(false);
+      setIsInstallAvailable(false);
+      setIsStandalone(true);
+
+      if (isDev) {
+        console.info('Blinkly PWA installed.');
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    setIsStandalone(Boolean(isStandaloneMode));
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
   const triggerInstallPrompt = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to the install prompt: ${outcome}`);
-    setDeferredPrompt(null);
+    const promptEvent = deferredPromptRef.current;
+    if (!promptEvent || isStandalone) {
+      return null;
+    }
+
+    promptEvent.prompt();
+    const choice = await promptEvent.userChoice;
+    const outcome = choice?.outcome || 'dismissed';
+
+    if (import.meta.env.DEV) {
+      console.info(`Blinkly PWA install prompt ${outcome}.`);
+    }
+
+    deferredPromptRef.current = null;
+    setHasDeferredPrompt(false);
     setIsInstallAvailable(false);
+    return outcome;
   };
 
   // Push notification permissions state
@@ -1168,9 +1216,11 @@ export const AppProvider = ({ children }) => {
       uploadMeAvatar,
       deleteMeAvatar,
       updateAppearance,
-      deferredPrompt,
+      hasDeferredPrompt,
       isInstallAvailable,
       isStandalone,
+      isIosDevice,
+      isPwaInstallSupported,
       triggerInstallPrompt,
       pushPermissionState,
       isPushSubscribed,
