@@ -2,47 +2,65 @@
 @config "../tailwind.config.js";
 
 :root {
-  /* Premium Light Mode Colors - warm, clean, off-white background */
-  --color-bg: #f5f6f8; 
+  color-scheme: light;
+  /* Premium Light Mode Colors - clean, soft off-white background */
+  --color-bg: #f6f7fb; 
   --color-sidebar: #ffffff;
-  --color-chat: #fbfbfc;
-  --color-border: #e9ecf0;
-  --color-text-primary: #1a1c23;
-  --color-text-secondary: #4f566b;
-  --color-text-muted: #8792a2;
-  --color-bubble-sent: #7c3aed; /* Brand violet */
+  --color-chat: #fbfbfd;
+  --color-border: #e4e7ee;
+  --color-text-primary: #171923;
+  --color-text-secondary: #525a70;
+  --color-text-muted: #8a94a6;
+  --color-bubble-sent: #7c3aed;
   --color-bubble-sent-text: #ffffff;
-  --color-bubble-received: #eef1f6;
-  --color-bubble-received-text: #1a1c23;
+  --color-bubble-received: #eef1f7;
+  --color-bubble-received-text: #171923;
   --color-accent: #7c3aed;
   --color-accent-hover: #6d28d9;
   --color-card: #ffffff;
-  --color-shadow: rgba(49, 53, 65, 0.06);
+  --color-shadow: rgba(31, 35, 50, 0.08);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .dark {
-  /* Premium Dark Mode Colors - deep rich charcoal/slate, higher contrast */
-  --color-bg: #07080e;
-  --color-sidebar: #0f111a;
-  --color-chat: #07080e;
-  --color-border: #1a1c2d;
-  --color-text-primary: #f3f4f6;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #475569;
+  color-scheme: dark;
+  /* Premium Dark Mode Colors - deep navy/charcoal */
+  --color-bg: #070912;
+  --color-sidebar: #0e111b;
+  --color-chat: #080b14;
+  --color-border: #202436;
+  --color-text-primary: #f4f6fb;
+  --color-text-secondary: #a7b0c2;
+  --color-text-muted: #667085;
   --color-bubble-sent: #7c3aed;
   --color-bubble-sent-text: #ffffff;
-  --color-bubble-received: #131625;
-  --color-bubble-received-text: #f3f4f6;
+  --color-bubble-received: #171b2a;
+  --color-bubble-received-text: #f4f6fb;
   --color-accent: #8b5cf6;
   --color-accent-hover: #7c3aed;
-  --color-card: #0f111a;
-  --color-shadow: rgba(0, 0, 0, 0.5);
+  --color-card: #111522;
+  --color-shadow: rgba(0, 0, 0, 0.42);
 }
 
 @layer base {
+  html {
+    height: 100%;
+    background: var(--color-bg);
+  }
+
   body {
     @apply bg-surface text-text-primary antialiased overflow-hidden selection:bg-brand-500 selection:text-white;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, input, textarea {
+    font: inherit;
+  }
+
+  button, a, input, textarea {
+    outline-offset: 2px;
   }
   
   /* Smooth theme transitions, excluding typing areas to maintain performance */
@@ -105,11 +123,11 @@
   width: 100%;
   height: 44px;
   min-height: 44px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid var(--color-border);
-  background-color: var(--color-bg);
+  background-color: color-mix(in srgb, var(--color-bg) 86%, var(--color-sidebar));
   color: var(--color-text-primary);
-  font-size: 0.75rem; /* text-xs */
+  font-size: 0.875rem;
   line-height: 1.25rem;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -139,11 +157,11 @@
 .premium-textarea {
   display: block;
   width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid var(--color-border);
   background-color: var(--color-bg);
   color: var(--color-text-primary);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   line-height: 1.25rem;
   padding: 0.75rem 1rem;
   outline: none;
@@ -170,8 +188,9 @@
   height: 44px;
   padding-left: 1.25rem;
   padding-right: 1.25rem;
-  border-radius: 12px;
-  font-size: 0.75rem; /* text-xs */
+  min-width: 44px;
+  border-radius: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   cursor: pointer;
   user-select: none;
@@ -241,9 +260,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem; /* 40px */
-  height: 2.5rem;
-  border-radius: 10px;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 14px;
   color: var(--color-text-secondary);
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: transparent;
@@ -266,7 +285,7 @@
 .premium-card {
   background-color: var(--color-sidebar);
   border: 1px solid var(--color-border);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 1.5rem;
   box-shadow: 0 4px 12px -2px var(--color-shadow), 0 2px 6px -1px var(--color-shadow);
   transition: box-shadow 0.15s ease;
@@ -290,8 +309,10 @@
   align-items: center;
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  gap: 0.75rem;
+  min-height: 44px;
+  border-radius: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-align: left;
   cursor: pointer;
@@ -321,6 +342,60 @@
   text-align: center;
   padding: 3rem 1.5rem;
   opacity: 0.9;
+}
+
+.app-shell {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.mobile-safe-bottom {
+  padding-bottom: max(0.75rem, var(--safe-bottom));
+}
+
+.chat-panel {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 5%, transparent), transparent 18rem),
+    var(--color-chat);
+}
+
+.chat-column {
+  width: min(100%, 860px);
+  margin-inline: auto;
+}
+
+.chat-composer-shell {
+  background: color-mix(in srgb, var(--color-sidebar) 92%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.conversation-item {
+  min-height: 64px;
+}
+
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .premium-card {
+    border-radius: 16px;
+    padding: 1rem;
+  }
+
+  .chat-column {
+    width: 100%;
+  }
 }
 
 /* Clean background overlay mesh */

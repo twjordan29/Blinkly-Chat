@@ -418,16 +418,16 @@ export default function Dashboard() {
   const pendingRequestsCount = requests.received?.length || 0;
 
   return (
-    <div className="h-[100dvh] w-full flex bg-surface text-text-primary overflow-hidden relative font-sans">
+    <div className="app-shell w-full flex bg-surface text-text-primary overflow-hidden relative font-sans">
       
       {/* 1. LEFT SIDEBAR PANEL: Desktop width exactly 340px */}
       <div className={`
         ${activeConversation ? 'hidden md:flex' : 'flex'}
-        w-full md:w-[340px] flex-col border-r border-bordercolor h-full shrink-0 z-20 bg-sidebar
+        w-full md:w-[352px] flex-col border-r border-bordercolor h-full shrink-0 z-20 bg-sidebar
       `}>
         
         {/* Sidebar Header */}
-        <div className="p-3.5 flex items-center justify-between border-b border-bordercolor">
+        <div className="p-3.5 flex items-center justify-between border-b border-bordercolor bg-sidebar/95 backdrop-blur">
           <div className="flex items-center gap-2.5">
             {/* User Profile Avatar */}
             <div 
@@ -463,7 +463,7 @@ export default function Dashboard() {
                 setFriendsModalOpen(true);
                 setFriendsActiveTab('search');
               }}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 cursor-pointer relative"
+              className="premium-icon-btn relative"
               title="Friends"
             >
               <Users className="w-4 h-4" />
@@ -474,7 +474,7 @@ export default function Dashboard() {
 
             <button 
               onClick={() => toggleSound(!soundEnabled)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 cursor-pointer"
+              className="premium-icon-btn"
               title={soundEnabled ? "Mute sounds" : "Unmute sounds"}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-text-muted" />}
@@ -482,7 +482,7 @@ export default function Dashboard() {
 
             <button 
               onClick={() => navigate('/settings')}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 cursor-pointer"
+              className="premium-icon-btn"
               title="Settings"
             >
               <Settings className="w-4 h-4" />
@@ -613,8 +613,8 @@ export default function Dashboard() {
                   key={conv.conversation_id}
                   onClick={() => selectConversation(conv)}
                   className={`
-                    relative flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer select-none border transition-all duration-150
-                    hover:bg-surface/50 active:scale-[0.99]
+                    conversation-item relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer select-none border transition-all duration-150
+                    hover:bg-surface/60 active:scale-[0.99]
                     ${isSelected 
                       ? 'bg-surface border-bordercolor shadow-premium-sm ring-1 ring-accent/10' 
                       : 'border-transparent'}
@@ -676,19 +676,19 @@ export default function Dashboard() {
       {/* 2. CHAT CANVAS AREA */}
       <div className={`
         ${!activeConversation ? 'hidden md:flex' : 'flex'}
-        flex-1 flex-col h-full bg-chat bg-dot-pattern/50 relative
+        flex-1 flex-col h-full chat-panel relative min-w-0
       `}>
         
         {activeConversation ? (
           <>
             {/* Compact premium Chat Header */}
-            <div className="h-13 border-b border-bordercolor px-4 flex items-center justify-between bg-sidebar z-10 shadow-premium-sm shrink-0">
+            <div className="h-14 border-b border-bordercolor px-3 md:px-5 flex items-center justify-between bg-sidebar/95 backdrop-blur z-10 shadow-premium-sm shrink-0">
               
               {/* Left Profile details */}
               <div className="flex items-center gap-2.5 min-w-0">
                 <button 
                   onClick={() => selectConversation(null)}
-                  className="md:hidden p-1 rounded-lg hover:bg-surface text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+                  className="premium-icon-btn md:hidden"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -715,7 +715,7 @@ export default function Dashboard() {
                     ) : (onlineFriends.has(activeConversation.other_user_id) || activeConversation.is_online === 1) ? (
                       <span className="text-green-500 font-medium">Online</span>
                     ) : (
-                      <span>Offline {activeConversation.last_seen ? `• last seen ${formatDate(activeConversation.last_seen)}` : ''}</span>
+                      <span>Offline {activeConversation.last_seen ? `- last seen ${formatDate(activeConversation.last_seen)}` : ''}</span>
                     )}
                   </span>
                 </div>
@@ -726,20 +726,20 @@ export default function Dashboard() {
                 {/* Desktop view: direct buttons */}
                 <div className="hidden sm:flex items-center gap-1">
                   <button 
-                    className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
+                    className="premium-icon-btn opacity-70 hover:opacity-100"
                     title="Voice Call (V2)"
                   >
                     <Phone className="w-4 h-4" />
                   </button>
                   <button 
-                    className="w-9 h-9 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface transition-all active:scale-95 flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
+                    className="premium-icon-btn opacity-70 hover:opacity-100"
                     title="Video Call (V2)"
                   >
                     <Video className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => removeFriend(activeConversation.other_user_id)}
-                    className="w-9 h-9 rounded-xl text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+                    className="premium-icon-btn hover:text-red-500 hover:bg-red-500/10"
                     title="Remove friend (unfriend)"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -750,7 +750,7 @@ export default function Dashboard() {
                 <div className="sm:hidden">
                   <button
                     onClick={() => setHeaderMenuOpen(!headerMenuOpen)}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${headerMenuOpen ? 'text-accent bg-accent/10' : 'text-text-secondary hover:text-text-primary hover:bg-surface'}`}
+                    className={`premium-icon-btn ${headerMenuOpen ? 'premium-icon-btn-active' : ''}`}
                   >
                     <MoreVertical className="w-4 h-4" />
                   </button>
@@ -799,12 +799,12 @@ export default function Dashboard() {
             </div>
 
             {/* Centered conversation column */}
-            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto w-full messages-container">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto w-full messages-container overscroll-contain">
               
               {loadingMessages ? (
                 <MessageSkeleton />
               ) : (
-                <div className="max-w-[950px] mx-auto w-full px-6 py-5 flex flex-col justify-end min-h-full">
+                <div className="chat-column px-3 sm:px-5 md:px-6 py-4 md:py-6 flex flex-col justify-end min-h-full">
                   
                   {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 opacity-75 animate-fade-in">
@@ -908,7 +908,7 @@ export default function Dashboard() {
                                       name: activeConversation.display_name || activeConversation.username,
                                       caption: msg.message_text
                                     })}
-                                    className="relative rounded-xl overflow-hidden border border-bordercolor/60 cursor-zoom-in bg-surface hover:brightness-95 transition-all shadow-sm max-w-sm"
+                                    className="relative rounded-2xl overflow-hidden border border-bordercolor/60 cursor-zoom-in bg-surface hover:brightness-95 transition-all shadow-sm max-w-[min(22rem,72vw)]"
                                     style={{
                                       aspectRatio: (msg.attachment.width && msg.attachment.height) 
                                         ? `${msg.attachment.width} / ${msg.attachment.height}` 
@@ -933,7 +933,7 @@ export default function Dashboard() {
                                   {msg.message_text && (
                                     <div 
                                       className={`
-                                        px-3.5 py-2 rounded-xl text-[12.5px] leading-relaxed whitespace-pre-wrap break-words max-w-sm
+                                        px-3.5 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words max-w-[min(22rem,72vw)]
                                         ${isMine 
                                           ? 'bg-sent text-sent-text rounded-tr-none shadow-premium-sm font-medium self-end' 
                                           : 'bg-received text-received-text rounded-tl-none border border-bordercolor font-medium self-start'}
@@ -947,7 +947,7 @@ export default function Dashboard() {
                                 /* Normal text message bubble */
                                 <div 
                                   className={`
-                                    px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed whitespace-pre-wrap break-words
+                                    px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words max-w-[min(34rem,78vw)]
                                     ${isMine 
                                       ? 'bg-sent text-sent-text rounded-br-none shadow-premium-sm font-medium' 
                                       : 'bg-received text-received-text rounded-bl-none border border-bordercolor font-medium'}
@@ -1098,8 +1098,8 @@ export default function Dashboard() {
             </div>
 
             {/* Composer/Input: Centers container inside same 950px column */}
-            <div className="bg-sidebar border-t border-bordercolor w-full shrink-0 shadow-premium-md pb-[env(safe-area-inset-bottom)]">
-              <div className="max-w-[950px] mx-auto w-full px-4 md:px-6 py-2.5 md:py-3">
+            <div className="chat-composer-shell border-t border-bordercolor w-full shrink-0 shadow-premium-md mobile-safe-bottom">
+              <div className="chat-column w-full px-3 sm:px-5 md:px-6 pt-2.5 md:pt-3">
                 
                 {/* Floating Image Upload Preview (Phase 2) */}
                 {imagePreviewUrl && (
@@ -1171,12 +1171,12 @@ export default function Dashboard() {
                 )}
 
                 {/* Input text form bar */}
-                <form onSubmit={handleSendMessage} className="flex items-center gap-2 bg-surface border border-bordercolor rounded-2xl px-2.5 py-1 focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/15 transition-all min-h-[44px]">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-1.5 sm:gap-2 bg-surface border border-bordercolor rounded-2xl px-1.5 sm:px-2.5 py-1 focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/15 transition-all min-h-[52px]">
                   
                   <button
                     type="button"
                     onClick={() => setShowEmojiBar(!showEmojiBar)}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${showEmojiBar ? 'text-accent bg-accent/10' : 'text-text-secondary hover:text-text-primary hover:bg-sidebar'}`}
+                    className={`premium-icon-btn ${showEmojiBar ? 'premium-icon-btn-active' : ''}`}
                     title="Toggle Emoji Drawer"
                   >
                     <Smile className="w-4 h-4" />
@@ -1185,7 +1185,7 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => imageFileInputRef.current?.click()}
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-sidebar transition-all cursor-pointer"
+                    className="premium-icon-btn"
                     title="Upload Image"
                   >
                     <Image className="w-4 h-4" />
@@ -1203,13 +1203,13 @@ export default function Dashboard() {
                     value={messageInput}
                     onChange={handleMessageChange}
                     placeholder="Type a message..."
-                    className="flex-1 bg-transparent text-sm text-text-primary placeholder:text-text-muted focus:outline-none border-none py-2 px-2.5 no-transition"
+                    className="min-w-0 flex-1 bg-transparent text-[16px] sm:text-sm text-text-primary placeholder:text-text-muted focus:outline-none border-none py-2 px-1.5 sm:px-2.5 no-transition"
                   />
 
                   <button
                     type="submit"
                     disabled={!messageInput.trim()}
-                    className="w-10 h-10 flex items-center justify-center bg-accent hover:bg-accent-hover disabled:opacity-40 disabled:hover:bg-accent text-white rounded-xl transition-all shadow-premium-sm active:scale-[0.98] shrink-0 cursor-pointer"
+                    className="touch-target flex items-center justify-center bg-accent hover:bg-accent-hover disabled:opacity-40 disabled:hover:bg-accent text-white rounded-xl transition-all shadow-premium-sm active:scale-[0.98] shrink-0 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -1221,7 +1221,7 @@ export default function Dashboard() {
 
             {/* New messages floating badge */}
             {hasNewMessagesBadge && (
-              <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 animate-bounce">
+              <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 animate-bounce">
                 <button
                   onClick={() => scrollToBottom('smooth')}
                   className="px-4 py-2 bg-accent hover:bg-accent-hover text-white font-bold text-xs rounded-full shadow-premium-lg border border-accent/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"

@@ -38,30 +38,30 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col justify-center items-center p-4 relative overflow-hidden transition-colors duration-300">
+    <div className="min-h-[100dvh] bg-mesh-subtle bg-surface flex flex-col justify-center items-center px-4 py-8 relative overflow-hidden transition-colors duration-300">
       
       {/* Subtle background mesh effects */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/3 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
       <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-pink-500/2 rounded-full blur-3xl -z-10 animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
 
       {/* Main Container */}
-      <div className="w-full max-w-sm animate-scale-in">
+      <div className="w-full max-w-[420px] animate-scale-in">
         
         {/* Logo & Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center p-3 bg-sidebar border border-bordercolor rounded-2xl shadow-premium-md mb-4.5">
             <MessageSquare className="w-6 h-6 text-brand-600" />
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-text-primary mb-1.5 font-plus-jakarta">
+          <h1 className="text-4xl font-black tracking-tight text-text-primary mb-1.5 font-plus-jakarta">
             Blinkly<span className="text-brand-500">.chat</span>
           </h1>
-          <p className="text-text-secondary text-xs">
+          <p className="text-text-secondary text-sm">
             {isLogin ? 'Welcome back! Connect in real-time.' : 'Create an account to begin chatting.'}
           </p>
         </div>
 
         {/* Auth Card */}
-        <div className="bg-sidebar border border-bordercolor rounded-2xl p-6 shadow-premium-lg relative overflow-hidden">
+        <div className="bg-sidebar border border-bordercolor rounded-[1.35rem] p-5 sm:p-6 shadow-premium-lg relative overflow-hidden">
           
           {error && (
             <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs flex items-start gap-2 animate-scale-in">
@@ -147,7 +147,7 @@ export default function Auth() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
-                  placeholder="••••••••"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="premium-input premium-input-with-icon-left premium-input-with-icon-right"
@@ -155,7 +155,8 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -203,7 +204,7 @@ export default function Auth() {
 
         {/* Footer */}
         <p className="text-center text-[10.5px] text-text-muted mt-5 tracking-wide">
-          Secure JWT authentication &bull; Real-time delivery &bull; Blinkly V1
+          Secure JWT authentication - Real-time delivery - Blinkly V1
         </p>
 
       </div>

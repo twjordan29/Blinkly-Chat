@@ -327,7 +327,7 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-chat text-text-primary flex flex-col relative pb-20 md:pb-12">
+    <div className="h-[100dvh] overflow-y-auto bg-chat text-text-primary flex flex-col relative pb-[max(2rem,env(safe-area-inset-bottom))] md:pb-12">
       {/* Premium background mesh overlays */}
       <div className="absolute inset-0 bg-dot-pattern opacity-30 select-none pointer-events-none"></div>
       <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-accent/5 to-transparent select-none pointer-events-none"></div>
@@ -352,7 +352,7 @@ export default function Settings() {
       )}
 
       {/* Navigation Top Header Bar */}
-      <div className="w-full h-14 bg-sidebar border-b border-bordercolor flex items-center shrink-0 z-10 shadow-premium-sm">
+      <div className="sticky top-0 w-full h-14 bg-sidebar/95 backdrop-blur border-b border-bordercolor flex items-center shrink-0 z-10 shadow-premium-sm">
         <div className="max-w-[1000px] w-full mx-auto px-4.5 flex items-center justify-between">
           <button 
             onClick={() => navigate('/')}
@@ -370,10 +370,10 @@ export default function Settings() {
       </div>
 
       {/* Main Settings Frame */}
-      <div className="max-w-[1000px] w-full mx-auto px-4.5 mt-6 flex-1 flex flex-col md:flex-row gap-6 relative z-10">
+      <div className="max-w-[1040px] w-full mx-auto px-3 sm:px-4.5 mt-4 md:mt-6 flex-1 flex flex-col md:flex-row gap-5 md:gap-7 relative z-10">
         
         {/* LEFT NAV PANEL - Desktop Navigation */}
-        <div className="hidden md:flex flex-col w-58 shrink-0 space-y-1 select-none">
+        <div className="hidden md:flex flex-col w-60 shrink-0 space-y-1 select-none sticky top-20 self-start">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -405,10 +405,10 @@ export default function Settings() {
         </div>
 
         {/* RIGHT CONTENT FRAME */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 space-y-6 min-w-0">
 
           {/* Mobile Navigation Tabs */}
-          <div className="flex md:hidden overflow-x-auto gap-2 py-2 select-none border-b border-bordercolor mb-4 no-scrollbar">
+          <div className="flex md:hidden overflow-x-auto gap-2 pb-3 select-none border-b border-bordercolor mb-4 no-scrollbar">
             {navItems.map(item => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
@@ -416,7 +416,7 @@ export default function Settings() {
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                  className={`flex items-center gap-1.5 min-h-11 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isActive 
                       ? 'bg-accent/15 text-accent border border-accent/25' 
                       : 'bg-surface/40 text-text-secondary border border-bordercolor hover:text-text-primary'
@@ -433,7 +433,7 @@ export default function Settings() {
               PROFILE SECTION: Editable bio, details, avatar
              =================================================== */}
           {(activeSection === 'profile') && (
-            <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
+            <div className="bg-sidebar rounded-2xl border border-bordercolor p-4 sm:p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <User className="w-4.5 h-4.5 text-accent" />
                 <h3 className="text-[13px] font-extrabold text-text-primary uppercase tracking-wider font-plus-jakarta">My Profile</h3>
@@ -616,7 +616,7 @@ export default function Settings() {
               APPEARANCE SECTION: system | light | dark theme preferences
              =================================================== */}
           {(activeSection === 'appearance') && (
-            <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
+            <div className="bg-sidebar rounded-2xl border border-bordercolor p-4 sm:p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <Paintbrush className="w-4.5 h-4.5 text-accent" />
                 <h3 className="text-[13px] font-extrabold text-text-primary uppercase tracking-wider font-plus-jakarta">Appearance</h3>
@@ -743,7 +743,7 @@ export default function Settings() {
               NOTIFICATIONS SECTION: Toggle push notification subscription
              =================================================== */}
           {activeSection === 'notifications' && (
-            <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
+            <div className="bg-sidebar rounded-2xl border border-bordercolor p-4 sm:p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <Bell className="w-4.5 h-4.5 text-accent" />
                 <h3 className="text-[13px] font-extrabold text-text-primary uppercase tracking-wider font-plus-jakarta">Notifications</h3>
@@ -839,7 +839,7 @@ export default function Settings() {
               ACCOUNT & SECURITY SECTION: password change, details
              =================================================== */}
           {(activeSection === 'account') && (
-            <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
+            <div className="bg-sidebar rounded-2xl border border-bordercolor p-4 sm:p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <Shield className="w-4.5 h-4.5 text-accent" />
                 <h3 className="text-[13px] font-extrabold text-text-primary uppercase tracking-wider font-plus-jakarta">Account & Security</h3>
@@ -895,7 +895,7 @@ export default function Settings() {
                         required
                         value={passwordData.currentPassword}
                         onChange={(e) => setPasswordData(p => ({ ...p, currentPassword: e.target.value }))}
-                        placeholder="••••••••"
+                        placeholder="Current password"
                         className="premium-input"
                       />
                     </div>
@@ -906,7 +906,7 @@ export default function Settings() {
                         required
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData(p => ({ ...p, newPassword: e.target.value }))}
-                        placeholder="••••••••"
+                        placeholder="New password"
                         className="premium-input"
                       />
                     </div>
@@ -917,7 +917,7 @@ export default function Settings() {
                         required
                         value={passwordData.confirmPassword}
                         onChange={(e) => setPasswordData(p => ({ ...p, confirmPassword: e.target.value }))}
-                        placeholder="••••••••"
+                        placeholder="Confirm password"
                         className="premium-input"
                       />
                     </div>
@@ -964,7 +964,7 @@ export default function Settings() {
               PRIVACY SECTION: status, last seen, friend requests
              =================================================== */}
           {(activeSection === 'privacy') && (
-            <div className="bg-sidebar rounded-2xl border border-bordercolor p-5.5 shadow-premium-sm animate-scale-in">
+            <div className="bg-sidebar rounded-2xl border border-bordercolor p-4 sm:p-5.5 shadow-premium-sm animate-scale-in">
               <div className="flex items-center gap-2 mb-5 select-none">
                 <Eye className="w-4.5 h-4.5 text-accent" />
                 <h3 className="text-[13px] font-extrabold text-text-primary uppercase tracking-wider font-plus-jakarta">Privacy Settings</h3>
