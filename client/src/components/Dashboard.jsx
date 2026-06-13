@@ -122,6 +122,8 @@ export default function Dashboard() {
   const messagesContainerRef = useRef(null);
   const prevMessagesLengthRef = useRef(0);
   const prevActiveConversationIdRef = useRef(null);
+  const initialBottomStickRef = useRef(false);
+  const bottomSettleTimersRef = useRef([]);
 
   // Auto-scroll & New messages state
   const [hasNewMessagesBadge, setHasNewMessagesBadge] = useState(false);
@@ -146,9 +148,40 @@ export default function Dashboard() {
 
   // Auto-scroll helper
   const scrollToBottom = (behavior = 'smooth') => {
-    messagesEndRef.current?.scrollIntoView({ behavior });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: behavior === 'instant' ? 'auto' : behavior,
+      block: 'end'
+    });
     setHasNewMessagesBadge(false);
   };
+
+  const clearBottomSettleTimers = () => {
+    bottomSettleTimersRef.current.forEach(timer => clearTimeout(timer));
+    bottomSettleTimersRef.current = [];
+  };
+
+  const settleScrollToBottom = (behavior = 'instant') => {
+    clearBottomSettleTimers();
+    initialBottomStickRef.current = true;
+    scrollToBottom(behavior);
+
+    requestAnimationFrame(() => {
+      scrollToBottom(behavior);
+      requestAnimationFrame(() => scrollToBottom(behavior));
+    });
+
+    [80, 240, 600, 1100].forEach((delay, index, list) => {
+      const timer = setTimeout(() => {
+        scrollToBottom(behavior);
+        if (index === list.length - 1) {
+          initialBottomStickRef.current = false;
+        }
+      }, delay);
+      bottomSettleTimersRef.current.push(timer);
+    });
+  };
+
+  useEffect(() => () => clearBottomSettleTimers(), []);
 
   const isUserNearBottom = () => {
     const container = messagesContainerRef.current;
@@ -164,15 +197,15 @@ export default function Dashboard() {
     const isConvoSwitch = prevActiveConversationIdRef.current !== currentConvoId;
     const isNewMessageAdded = messages.length > prevMessagesLengthRef.current;
 
-    // Sync refs
+    if (loadingMessages) return;
+
+    // Sync refs after loading so the first loaded render still counts as a conversation switch.
     prevMessagesLengthRef.current = messages.length;
     prevActiveConversationIdRef.current = currentConvoId;
 
-    if (loadingMessages) return;
-
     if (isConvoSwitch) {
-      // Instant scroll when opening a conversation
-      scrollToBottom('instant');
+      // Keep pinned while images/media settle after opening an existing conversation.
+      settleScrollToBottom('instant');
       setHasNewMessagesBadge(false);
       return;
     }
@@ -922,7 +955,7 @@ export default function Dashboard() {
                                       className="w-full h-full object-cover max-h-[260px]"
                                       loading="lazy"
                                       onLoad={() => {
-                                        if (isUserNearBottom()) {
+                                        if (initialBottomStickRef.current || isUserNearBottom()) {
                                           scrollToBottom('instant');
                                         }
                                       }}

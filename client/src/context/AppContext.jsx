@@ -91,12 +91,18 @@ export const AppProvider = ({ children }) => {
   
   const socketRef = useRef(null);
   const activeConversationRef = useRef(null);
+  const conversationsRef = useRef([]);
   const typingTimeoutsRef = useRef({}); // { [convId-userId]: timeoutId }
 
   // Sync activeConversation to ref to avoid stale closures in socket events
   useEffect(() => {
     activeConversationRef.current = activeConversation;
   }, [activeConversation]);
+
+  // Keep socket event handlers current without reconnecting the socket.
+  useEffect(() => {
+    conversationsRef.current = conversations;
+  }, [conversations]);
 
   // Request browser notification permission on mount
   useEffect(() => {
@@ -357,7 +363,7 @@ export const AppProvider = ({ children }) => {
       // Browser push notification
       if (msg.sender_id !== user.id && (!activeConv || activeConv.conversation_id !== msg.conversation_id)) {
         playNotificationSound('incoming');
-        const senderConv = conversations.find(c => c.conversation_id === msg.conversation_id);
+        const senderConv = conversationsRef.current.find(c => c.conversation_id === msg.conversation_id);
         const senderName = senderConv ? senderConv.display_name : 'New Message';
         triggerBrowserNotification(senderName, msg.message_text, senderConv?.avatar_url);
       }
@@ -439,7 +445,7 @@ export const AppProvider = ({ children }) => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [user, conversations]);
+  }, [user, token]);
 
   // Load friends and conversations when user is logged in
   useEffect(() => {
