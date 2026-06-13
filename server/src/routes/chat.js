@@ -214,7 +214,7 @@ router.post('/conversations/:conversation_id/messages/image', authMiddleware, (r
     let width = null;
     let height = null;
     try {
-      const dimensions = sizeOf(file.path);
+      const dimensions = sizeOf(fs.readFileSync(file.path));
       width = dimensions.width;
       height = dimensions.height;
     } catch (dimErr) {

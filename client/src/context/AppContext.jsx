@@ -162,22 +162,40 @@ export const AppProvider = ({ children }) => {
 
   // API Fetch Wrapper
   const apiFetch = async (endpoint, options = {}) => {
+    const { timeoutMs, ...fetchOptions } = options;
     const headers = {
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `Bearer ${token}` }),
-      ...options.headers,
+      ...fetchOptions.headers,
     };
 
-    if (options.body instanceof FormData) {
+    if (fetchOptions.body instanceof FormData) {
       delete headers['Content-Type'];
     }
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    const controller = timeoutMs ? new AbortController() : null;
+    const timeout = controller
+      ? setTimeout(() => controller.abort(), timeoutMs)
+      : null;
 
-    const data = await response.json();
+    let response;
+    try {
+      response = await fetch(`${API_BASE}${endpoint}`, {
+        ...fetchOptions,
+        headers,
+        signal: fetchOptions.signal || controller?.signal
+      });
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        throw new Error('Request timed out. Please try again.');
+      }
+      throw err;
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
+
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
     if (!response.ok) {
       throw new Error(data.error || 'Server error occurred');
     }
@@ -650,7 +668,8 @@ export const AppProvider = ({ children }) => {
 
     const data = await apiFetch(`/chat/conversations/${conversationId}/messages/image`, {
       method: 'POST',
-      body: formData
+      body: formData,
+      timeoutMs: 45000
     });
 
     if (data && data.success) {

@@ -13,11 +13,26 @@ self.addEventListener('install', event => {
       .then(cache => {
         return cache.addAll(urlsToCache);
       })
+      .then(() => self.skipWaiting())
   );
 });
 
 // Cache and Return Requests
 self.addEventListener('fetch', event => {
+  const requestUrl = new URL(event.request.url);
+  const isApiRequest = requestUrl.pathname.startsWith('/api/');
+  const isSocketRequest = requestUrl.pathname.startsWith('/socket.io/');
+  const isUploadRequest = requestUrl.pathname.startsWith('/uploads/');
+
+  if (
+    event.request.method !== 'GET' ||
+    isApiRequest ||
+    isSocketRequest ||
+    isUploadRequest
+  ) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -45,7 +60,7 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => clients.claim())
   );
 });
 
